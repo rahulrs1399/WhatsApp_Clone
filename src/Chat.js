@@ -3,7 +3,13 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { AvatarGenerator } from "random-avatar-generator";
 import "./Chat.css";
-import { AttachFile, InsertEmoticon, Mic, MoreVert, SearchOffOutlined } from "@mui/icons-material";
+import {
+  AttachFile,
+  InsertEmoticon,
+  Mic,
+  MoreVert,
+  SearchOffOutlined,
+} from "@mui/icons-material";
 
 function Chat() {
   const [seed, setSeed] = useState("");
@@ -14,6 +20,12 @@ function Chat() {
   useEffect(() => {
     setSeed(generator.generateRandomAvatar());
   }, []);
+
+  const sendMessage = (e) => {
+    e.preventDefault();
+    console.log("You typed:", input);
+    setInput("");
+  };
 
   return (
     <div className="chat">
@@ -46,8 +58,13 @@ function Chat() {
       <div className="chat__footer">
         <InsertEmoticon />
         <form>
-            <input type="text" placeholder="Type a message"value={input} onChange={(e) => setInput(e.target.value)}/>
-            <button type="Submit">Send message</button>
+          <input
+            type="text"
+            placeholder="Type a message"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
+          <button type="Submit" onClick={sendMessage}>Send message</button>
         </form>
         <Mic />
       </div>
