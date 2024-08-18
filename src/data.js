@@ -1,0 +1,3 @@
+const avatars = [
+    {name : "pixel"}
+]

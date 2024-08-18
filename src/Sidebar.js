@@ -7,6 +7,7 @@ import {
 import { Avatar, IconButton } from "@mui/material";
 import React from "react";
 import "./Sidebar.css";
+import SidebarChat from "./SidebarChat";
 
 function Sidebar() {
   return (
@@ -30,6 +31,20 @@ function Sidebar() {
           <SearchOutlined />
           <input placeholder="Search or start new chat" type="text" />
         </div>
+      </div>
+      <div className="sidebar__chats">
+        <SidebarChat addNewChat/>
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+        <SidebarChat />
+
       </div>
     </div>
   );
