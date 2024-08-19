@@ -23,7 +23,7 @@ function Chat() {
 
   const sendMessage = (e) => {
     e.preventDefault();
-    console.log("You typed:", input);
+    // console.log("You typed:", input);
     setInput("");
   };
 
