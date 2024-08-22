@@ -2,8 +2,10 @@ import { Avatar } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { AvatarGenerator } from 'random-avatar-generator'
 import './SidebarChat.css'
-import { collection, addDoc } from "firebase/firestore";
+import { doc, collection, onSnapshot, orderBy, query, addDoc } from "firebase/firestore";
 import db from './firebase';
+import { Link } from 'react-router-dom';
+
 
 function SidebarChat( {id, name, addNewChat} ) {
 
@@ -13,7 +15,7 @@ function SidebarChat( {id, name, addNewChat} ) {
 
   useEffect(() => {
     setSeed(generator.generateRandomAvatar());
-  }, [name]);
+  }, []);
 
   const createChat = async () => {
     const roomName = prompt("Please enter the name for chat room");
@@ -30,13 +32,15 @@ function SidebarChat( {id, name, addNewChat} ) {
   };
 
   return !addNewChat ? (
-    <div className='SidebarChat'>      
+    <Link to={`/room/${id}`}>
+      <div className='SidebarChat'>      
       <Avatar src={seed}/>
       <div className='SidebarChat__info'>
         <h2>{name}</h2>
         <p>Last message....</p>
       </div>
     </div>
+    </Link>
   ) : (
     <div onClick={createChat} className='SidebarChat'>
       <h2>Add new Chat</h2>

@@ -9,12 +9,17 @@ import React, { useEffect, useState } from "react";
 import "./Sidebar.css";
 import SidebarChat from "./SidebarChat";
 import db from "./firebase";
-import analytics from "./firebase";
+
 import {collection, getDocs } from "firebase/firestore";
+import { signOut } from "firebase/auth";
+import { auth } from './firebase';
+import {useUser} from "./UserContext"
 
 function Sidebar() {
-
+  const [{ user }] = useUser();
   const [rooms, setRooms] = useState([]);
+
+  console.log(user)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,13 +35,21 @@ function Sidebar() {
     fetchData();
   }, []);
 
-  console.log(rooms);
+  function handleSignOut() {
+    signOut(auth)
+      .then(() => {
+        console.log("User signed out");
+      })
+      .catch((error) => {
+        console.error("Error signing out: ", error);
+      });
+  }
 
 
   return (
     <div className="sidebar">
       <div className="sidebar__header">
-        <Avatar />
+        <Avatar src={user?.photoURL}/>
         <div className="sidebar__headerRight">
           <IconButton>
             <DonutLarge />
@@ -44,9 +57,11 @@ function Sidebar() {
           <IconButton>
             <Chat />
           </IconButton>
+          <div onClick={() => handleSignOut()}>
           <IconButton>
             <MoreVert />
           </IconButton>
+          </div>
         </div>
       </div>
       <div className="sidebar__search">
@@ -59,7 +74,7 @@ function Sidebar() {
         <SidebarChat addNewChat/>
         {
           rooms.map((room, index) => (
-            <SidebarChat key={room.id} id={index} name={room.name} />
+            <SidebarChat key={room.id} id={room.id} name={room.name} />
           ))
         }
       </div>
