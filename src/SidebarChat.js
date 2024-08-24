@@ -5,13 +5,33 @@ import './SidebarChat.css'
 import { doc, collection, onSnapshot, orderBy, query, addDoc } from "firebase/firestore";
 import db from './firebase';
 import { Link } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 
 
 function SidebarChat( {id, name, addNewChat} ) {
 
   const [seed, setSeed] = useState("")
+  const {roomId} = useParams();
+  const [messages, setMessages] = useState([]);
 
   const generator = new AvatarGenerator();
+
+  useEffect(() => {
+    if (id) {
+  
+      // Listening to messages collection changes
+      const messagesCollectionRef = collection(db, "room", id, "messages");
+      const messagesQuery = query(messagesCollectionRef, orderBy("timestamp", "desc"));
+      
+      const unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+        setMessages(snapshot.docs.map((doc) => doc.data()));
+      });
+       // Cleanup on unmount
+    return () => {
+      unsubscribeMessages();
+    };
+  }
+}, [id]);
 
   useEffect(() => {
     setSeed(generator.generateRandomAvatar());
@@ -37,7 +57,7 @@ function SidebarChat( {id, name, addNewChat} ) {
       <Avatar src={seed}/>
       <div className='SidebarChat__info'>
         <h2>{name}</h2>
-        <p>Last message....</p>
+        <p>{messages[0]?.message}</p>
       </div>
     </div>
     </Link>

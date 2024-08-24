@@ -41,12 +41,14 @@ function App() {
         });
       }
     });
-
+  
     return () => unsubscribe(); // Cleanup the listener on component unmount
   }, [dispatch]);
 
+  // console.log(state.user);
+
   return (
-    <UserProvider initialState={initialState} reducer={reducer}>
+    <UserProvider user={state.user}>
       <div className="app">
         {!state.user ? (
           <Login />

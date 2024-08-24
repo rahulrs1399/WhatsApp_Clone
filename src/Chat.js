@@ -11,73 +11,90 @@ import {
   SearchOffOutlined,
 } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import {doc, getDocs, collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import {
+  addDoc,
+  doc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
 import db from "./firebase";
-
+import { useUser } from "./UserContext";
 
 function Chat() {
   const [seed, setSeed] = useState("");
   const [input, setInput] = useState("");
-  const {roomId} = useParams();
+  const { roomId } = useParams();
   const [roomName, setRoomName] = useState("");
   const [messages, setMessages] = useState([]);
+  const [{ user }] = useUser();
 
   const generator = new AvatarGenerator();
 
   // console.log(roomId);
-useEffect(() => {
-  if (roomId) {
-    const roomDocRef = doc(db, "room", roomId);
+  useEffect(() => {
+    if (roomId) {
+      const roomDocRef = doc(db, "room", roomId);
 
-    // Log roomId and check its validity
-    // console.log("Fetching data for roomId:", roomId);
+      // Log roomId and check its validity
+      // console.log("Fetching data for roomId:", roomId);
 
-    // Fetch all room IDs to ensure the room exists
-    // getDocs(collection(db, "room")).then((snapshot) => {
-    //   const roomIds = snapshot.docs.map(doc => doc.id);
-    //   console.log("Available Room IDs:", roomIds);
-      
-    //   if (!roomIds.includes(roomId)) {
-    //     console.error(`Room ID ${roomId} does not exist.`);
-    //   }
-    // });
-    
-    // Listening to room name changes
-    const unsubscribeRoomName = onSnapshot(roomDocRef, (snapshot) => {
-      if (snapshot.exists()) {
-        const roomData = snapshot.data();
-        console.log("Room Data:", roomData); // Debug log
-        setRoomName(roomData.name);
-      } else {
-        console.log("No such room!");
-      }
-    });
-    console.log(roomName)
+      // Fetch all room IDs to ensure the room exists
+      // getDocs(collection(db, "room")).then((snapshot) => {
+      //   const roomIds = snapshot.docs.map(doc => doc.id);
+      //   console.log("Available Room IDs:", roomIds);
 
-    // Listening to messages collection changes
-    const messagesCollectionRef = collection(db, "rooms", roomId, "messages");
-    const messagesQuery = query(messagesCollectionRef, orderBy("timestamp", "asc"));
-    
-    const unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
-      setMessages(snapshot.docs.map((doc) => doc.data()));
-    });
+      //   if (!roomIds.includes(roomId)) {
+      //     console.error(`Room ID ${roomId} does not exist.`);
+      //   }
+      // });
 
-    // Cleanup on unmount
-    return () => {
-      unsubscribeRoomName();
-      unsubscribeMessages();
-    };
-  }
-}, [roomId, db]);
+      // Listening to room name changes
+      const unsubscribeRoomName = onSnapshot(roomDocRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const roomData = snapshot.data();
+          console.log("Room Data:", roomData); // Debug log
+          setRoomName(roomData.name);
+        } else {
+          console.log("No such room!");
+        }
+      });
+      // console.log(roomName)
 
+      // Listening to messages collection changes
+      const messagesCollectionRef = collection(db, "room", roomId, "messages");
+      const messagesQuery = query(
+        messagesCollectionRef,
+        orderBy("timestamp", "asc")
+      );
+
+      const unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+        setMessages(snapshot.docs.map((doc) => doc.data()));
+      });
+
+      // Cleanup on unmount
+      return () => {
+        unsubscribeRoomName();
+        unsubscribeMessages();
+      };
+    }
+  }, [roomId, db]);
 
   useEffect(() => {
     setSeed(generator.generateRandomAvatar());
   }, [roomId]);
 
-  const sendMessage = (e) => {
+  const sendMessage = async (e) => {
     e.preventDefault();
     // console.log("You typed:", input);
+    await addDoc(collection(db, "room", roomId, "messages"), {
+      message: input,
+      name: user.displayName,
+      timestamp: serverTimestamp(), // Correct usage for Firebase v9
+    });
+
     setInput("");
   };
 
@@ -87,7 +104,27 @@ useEffect(() => {
         <Avatar src={seed} />
         <div className="chat__headerInfo">
           <h3>{roomName}</h3>
-          <p>Last seen at ...</p>
+          <p>
+            Last seen at{" "}
+            {messages.length > 0
+              ? (() => {
+                  const lastMessageTime =
+                    messages[messages.length - 1]?.timestamp?.toDate();
+                  const now = new Date();
+                  const differenceInMs = now - lastMessageTime;
+
+                  const minutes = Math.floor(differenceInMs / 60000);
+                  const hours = Math.floor(minutes / 60);
+                  const remainingMinutes = minutes % 60;
+
+                  if (hours > 0) {
+                    return `${hours} hr ${remainingMinutes} min ago`;
+                  } else {
+                    return `${minutes} min ago`;
+                  }
+                })()
+              : "No messages yet"}
+          </p>
         </div>
         <div className="chat__headerRight">
           <IconButton>
@@ -103,11 +140,20 @@ useEffect(() => {
       </div>
 
       <div className="chat__body">
-        <p className={`chat__message ${true && "chat__receiver"}`}>
-          <span className="chat__name">Rahul RS</span>
-          Hey Guys
-          <span className="chat__timestamp">11:40pm</span>
-        </p>
+        {messages.map((message, index) => (
+          <p
+            key={index}
+            className={`chat__message ${
+              message.name === user.displayName && "chat__receiver"
+            }`}
+          >
+            <span className="chat__name">{message.name}</span>
+            {message.message}
+            <span className="chat__timestamp">
+              {new Date(message.timestamp?.toDate()).toLocaleString()}
+            </span>
+          </p>
+        ))}
       </div>
       <div className="chat__footer">
         <InsertEmoticon />
@@ -118,7 +164,9 @@ useEffect(() => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
-          <button type="Submit" onClick={sendMessage}>Send message</button>
+          <button type="Submit" onClick={sendMessage}>
+            Send message
+          </button>
         </form>
         <Mic />
       </div>

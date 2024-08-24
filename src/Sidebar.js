@@ -10,16 +10,18 @@ import "./Sidebar.css";
 import SidebarChat from "./SidebarChat";
 import db from "./firebase";
 
-import {collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { signOut } from "firebase/auth";
-import { auth } from './firebase';
-import {useUser} from "./UserContext"
+import { auth } from "./firebase";
+import { useUser } from "./UserContext";
 
 function Sidebar() {
   const [{ user }] = useUser();
   const [rooms, setRooms] = useState([]);
+  // const userContext = useUser();
+  // console.log("UserContext in Sidebar:", userContext);
 
-  console.log(user)
+  // console.log("User in Sidebar:", user); // Debugging line
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,11 +47,14 @@ function Sidebar() {
       });
   }
 
-
   return (
     <div className="sidebar">
       <div className="sidebar__header">
-        <Avatar src={user?.photoURL}/>
+        {user ? (
+          <Avatar src={user.photoURL} />
+        ) : (
+          <Avatar>{/* Fallback Avatar or Initials */}</Avatar>
+        )}
         <div className="sidebar__headerRight">
           <IconButton>
             <DonutLarge />
@@ -58,9 +63,9 @@ function Sidebar() {
             <Chat />
           </IconButton>
           <div onClick={() => handleSignOut()}>
-          <IconButton>
-            <MoreVert />
-          </IconButton>
+            <IconButton>
+              <MoreVert />
+            </IconButton>
           </div>
         </div>
       </div>
@@ -71,12 +76,10 @@ function Sidebar() {
         </div>
       </div>
       <div className="sidebar__chats">
-        <SidebarChat addNewChat/>
-        {
-          rooms.map((room, index) => (
-            <SidebarChat key={room.id} id={room.id} name={room.name} />
-          ))
-        }
+        <SidebarChat addNewChat />
+        {rooms.map((room, index) => (
+          <SidebarChat key={room.id} id={room.id} name={room.name} />
+        ))}
       </div>
     </div>
   );
