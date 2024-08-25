@@ -56,4 +56,5 @@
 .sidebar__searchContainer > input {
     border: none;
     color: gray;
+    flex: 1;
 }

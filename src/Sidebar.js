@@ -1,6 +1,7 @@
 import {
   Chat,
   DonutLarge,
+  Logout,
   MoreVert,
   SearchOutlined,
 } from "@mui/icons-material";
@@ -59,14 +60,14 @@ function Sidebar() {
           <IconButton>
             <DonutLarge />
           </IconButton>
-          <IconButton>
-            <Chat />
-          </IconButton>
           <div onClick={() => handleSignOut()}>
             <IconButton>
-              <MoreVert />
+              <Logout />
             </IconButton>
           </div>
+          <IconButton>
+            <MoreVert />
+          </IconButton>
         </div>
       </div>
       <div className="sidebar__search">

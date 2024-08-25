@@ -2,7 +2,12 @@
     display: flex;
     padding: 20px;
     cursor: pointer;
-    border-bottom: 1px solid #f6f6f6;
+    border-bottom: 2px solid #f6f6f6;
+}
+
+a {
+    text-decoration: none;
+    color: #000000;
 }
 
 .SidebarChat:hover{
@@ -17,3 +22,24 @@
 .SidebarChat__info {
     margin-left: 15px;
 }
+
+/* .SidebarChat__addNew {
+    background-color: #f1f1f1;
+    color: #007aff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: 2px dashed #007aff;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  
+  .SidebarChat__addNew:hover {
+    background-color: #007aff;
+    color: #fff;
+    border-color: #0056b3;
+  }
+  
+  .SidebarChat__addNew h2 {
+    font-weight: bold;
+  } */
