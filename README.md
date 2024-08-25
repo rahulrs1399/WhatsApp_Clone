@@ -39,27 +39,3 @@ https://whats-app-clone-f3ac8.web.app/
    ```bash
    git clone https://github.com/rahulrs1399/chat-app.git
    cd chat-app
-
-## Folder Structure
-chat-app/
-├── public/
-├── src/
-│   ├── components/
-│   │   ├── Sidebar.js
-│   │   ├── SidebarChat.js
-│   │   ├── Chat.js
-│   ├── firebase.js
-│   ├── App.js
-│   ├── index.js
-│   ├── App.css
-│   ├── Chat.css
-│   ├── Sidebar.css
-│   ├── SidebarChat.css
-│   └── ...
-├── .env
-├── .gitignore
-├── firebase.json
-├── package.json
-└── README.md
-
-
