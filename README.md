@@ -21,7 +21,7 @@ https://whats-app-clone-f3ac8.web.app/
 - **Authentication:** Firebase Authentication
 - **Hosting:** Firebase Hosting
 
-## Screenshots
+## Screenshots::
 
 ![Chat App Screenshot](./screenshots/chat-app-screenshot.png) <!-- Replace with an actual screenshot of your app -->
 
